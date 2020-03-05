@@ -15,12 +15,19 @@ div.wrapper {
   position: relative;
   display: block;
   text-align: center;
-
+  max-width: 1000px;
+  margin: 0 auto;
 }
-#start {
+.wrap-start{
+  width: 1000px;
   position: absolute;
-  margin-left: 384px;
-  margin-top: 150px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 400px;
+}
+
+#start {
   padding: 20px 50px;
   font-size: 50px;
   font-family: "Comic Sans MS";

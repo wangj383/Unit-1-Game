@@ -1,19 +1,22 @@
+
+
+
 let canvas = document.querySelector("canvas");
 let startButton = document.querySelector("#start")
-// canvas frame size
+// Set canvas frame size
 canvas.width = 1000
 canvas.height = 400
 
 
-// Loading all variables
+// **** Loading all variables ****
 let c = canvas.getContext("2d")
 
-// rectangle for game over
-let rectangle = canvas.getContext("2d")
-let rectX = canvas.width/2 - 100;
-let rectY = canvas.height/2 - 50;
-let rectWidth = 200;
-let rectHeight = 100;
+// for "Game Over" sign
+let gameOver = canvas.getContext("2d")
+let gameOverX = canvas.width/2 - 100;
+let gameOverY = canvas.height/2 - 50;
+let gameOverWidth = 200;
+let gameOverHeight = 100;
 
 let ground_height = (canvas.height / 5 * 4 + 3 )
 // let startButtonPresence = true
@@ -24,13 +27,29 @@ let score = 0
 let highestScore = 0
 
 
+
+
+// Math helper function
+function randomIntInclusive(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min + 1)) + min; 
+}
+
+function getDistance(cx,cy,ox,oy){
+  let xDistance = cx - ox;
+  let yDistance = cy - oy;
+  return Math.sqrt( Math.pow(xDistance, 2) + Math.pow(yDistance, 2))
+}
+
+
+
+
 // Loading the background image
 let backgroundImage = new Image(); 
-// let backgroundImageSpeed = 0;
 backgroundImage.src = './images/forest.png'; 
 backgroundImage.onload = function() {
   c.drawImage(backgroundImage, 0, 0,canvas.width, canvas.height);
-  
   // drawGround()
 }
 
@@ -82,44 +101,23 @@ class Circle{
     c.beginPath();
     c.arc(this.x, this.y, this.radius, this.startAngle, Math.PI * 2, false);
     c.closePath();
-    // // c.strokeStyle = "black";
-    // c.stroke();
     c.fillStyle = this.color;
     c.fill();
   };
   
   jump(){
-    // console.log(this.y)
-    // console.log(this._y)
     if(this.y != this._y && jumpKey == "off" ){
       this.y += this.dy
       this.dy = this._dy
     }
     if (jumpKey == "on"){
-      // console.log("ONONNOJNO")
-      // console.log(this.dy)
-      // console.log(this.y)
       this.y += this.dy
       this.dy += 1
-      // console.log(this.y)
       if (this.y == (this._y)){
-        // this.count += 1 
-        // console.log(this.count)
-        // reset dy to char dy -15
+        // reset dy to original value
         this.dy = this._dy
-        
-        // if (this.count == 2){
-        //   // if last part, turn off jump   
+        //  turn off jumpKey if one of the character's body part returns to its original location
           jumpKey = "off"
-          
-          console.log(jumpKey)
-
-        // }
-            
-        
-        // console.log("OFFFF")
-        // console.log(this.dy)
-        // console.log(this.y)
       }
     }
   }
@@ -214,6 +212,8 @@ class Mushroom {
     c.stroke();
     c.fillStyle = "#fbe3cc";
     c.fill();
+
+    // draw the mushroom head and the dots on the head 
     this.head.draw()
     this.dot1.draw()
     this.dot2.draw()
@@ -221,15 +221,11 @@ class Mushroom {
     this.dot4.draw()
     this.dot5.draw()
 
-    // draw the mushroom head and the dots on the head 
   }
 }
 
 
-// create circle 
-// let circle = new Circle(80, ground_height - 20, 20, 0, 0, 10, "red");
-
-  // create mushroom/obstacle
+// create mushroom/obstacle at random interval
 function randomMushroom() {
   let interval = randomIntInclusive(9,50)*100
   setTimeout(function() {
@@ -249,22 +245,11 @@ function init() {
   char.draw()
   scoreDisplay()
   stopAutoMoveAnimate = false
-
-  // let mushroom = new Mushroom(4);
   window.requestAnimationFrame(autoMoveAnimate)
   mushroomGo = true
   mushroomTroup = [new Mushroom(4)]
   randomMushroom()
 }
-
-  // let interval = 4000
-  // let mushroomTimerId = setInterval(function() {
-  //     // mushroom = new Mushroom(randomIntInclusive(1,5))
-  //   mushroomTroup.push(new Mushroom(2));
-  //   interval = randomIntInclusive(0,10)*1000
-  //   console.log(interval)
-  //   }, interval
-  // )
 
 
 
@@ -277,7 +262,6 @@ function reset(){
   $("#start").fadeIn()
   // drawGround()
   score = 0
-  // circle = new Circle(80, ground_height - 20, 20, 0, 0, 10, "red")
   char = new Character(-20)
   mushroomTroup = [new Mushroom(4)]
 
@@ -291,8 +275,6 @@ buttonEl.addEventListener("click", reset)
 
 
 // score recording
-
-
 function scoreDisplay() {
   c.textAlign="center"; 
   c.textBaseline = "middle";
@@ -310,18 +292,6 @@ function scoreDisplay() {
 
 
 
-// Math helper function
-function randomIntInclusive(min, max) {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min + 1)) + min; 
-}
-
-function getDistance(cx,cy,ox,oy){
-  let xDistance = cx - ox;
-  let yDistance = cy - oy;
-  return Math.sqrt( Math.pow(xDistance, 2) + Math.pow(yDistance, 2))
-}
 
 
 // Game Interactive Functions
@@ -352,24 +322,20 @@ function autoMoveAnimate() {
           char.draw()
           mushroom.head.color = "orange"
           mushroom.draw()
-          rectangle.textAlign="center"; 
-          rectangle.textBaseline = "middle";
-          rectangle.fillStyle = "orange";
-          rectangle.font = "30px Comic Sans MS"
-          rectangle.fillText ("Game Over", rectX + rectWidth / 2, rectY + rectHeight / 2)
+          gameOver.textAlign="center"; 
+          gameOver.textBaseline = "middle";
+          gameOver.fillStyle = "orange";
+          gameOver.font = "30px Comic Sans MS"
+          gameOver.fillText ("Game Over", gameOverX + gameOverWidth / 2, gameOverY + gameOverHeight / 2)
         }
       })
 
   }
 }
 function jumpAnimate(){
-  console.log(jumpKey)
-  // console.log(char)
   char.jump()
   if (jumpKey == "on") {
     requestAnimationFrame(jumpAnimate)
-    // char.jump()
-    console.log("HERERE>>??")
   } 
   
 }
