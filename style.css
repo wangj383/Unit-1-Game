@@ -1,0 +1,75 @@
+body {
+  margin: 0 5%;
+}
+#game_name {
+  text-align: center;
+  padding-top: 20px;
+  padding-bottom: 30px;
+}
+h2{
+  font-size: 25px;
+}
+
+
+div.wrapper {
+  position: relative;
+  display: block;
+  text-align: center;
+
+}
+#start {
+  position: absolute;
+  margin-left: 384px;
+  margin-top: 150px;
+  padding: 20px 50px;
+  font-size: 50px;
+  font-family: "Comic Sans MS";
+  background-color: rgba(255,200,230,1);
+}
+canvas {
+  width: 1000px;
+  height: 400px;
+}
+
+div.instruction {
+  background: #c4e8f5;
+  /* border: 1px solid black; */
+  padding: 3px 10px 10px 10px;
+  font-size: 20px;
+  height: 200px;
+  width: 980px;
+  margin: auto;
+
+}
+
+ul {
+  list-style: none;
+  line-height: 1.8;
+}
+span {
+    background-color: #eee;
+    border-radius: 3px;
+    border: 1px solid #b4b4b4de;
+    display: inline-block;
+    line-height: 1;
+    padding: 2px 4px;
+    white-space: nowrap;
+}
+
+.reset {
+  background-color: orange;
+  border: 1px solid #b4b4b4de;
+  padding: 4px 10px;
+  font-size: 18px;
+}
+/* Responsive Design (for smaller screens)
+@media (max-width: 768px){
+  div.wrapper {
+    display: block;
+    text-align: center;
+  }
+  div.instruction {
+    text-align: center;
+    border: none;
+  }
+} */
