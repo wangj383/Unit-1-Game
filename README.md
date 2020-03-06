@@ -22,8 +22,8 @@ To avoid the mushroom, the player can press the space bar to let Guinnie jump.
 
 ## Next Steps
 1. Make the backrgound move in the same direction as the mushroom
-2. Create a game interface where player could choose their character color
-3. Make the mushrooms move faster as the game progress
+2. Create a game interface where player could choose their character's color
+3. Allow the character to jump once in the air 
 
 
 

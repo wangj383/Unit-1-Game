@@ -3,8 +3,8 @@
 // (2) Math Helper Functions
 // (3) Event Listeners
 // (4) Create Classes: Class Circle, Character (=Guinnie), Mushroom (=Obstacle)
-// (5) Game Preparation
-// (6) Game Initiation
+// (5) Game Preparation Functions
+// (6) Game Initiation Function
 // (7) Game Animation Functions: autoMoveAnimation and jumpAnimation function
 // (8) Reset game
 // (9) Useful Function for Testing
@@ -64,7 +64,8 @@ function getDistance(cx,cy,ox,oy) {
 
 // *** (3) Event Listeners ***
 
-// startButton's event listener
+// startButton's event listener 
+// (startButton is created by html, and therefore need to be fadeout to hide the displauy)
 startButton.addEventListener("click", function() {
   $("#start").fadeOut(1);
   init();
@@ -240,7 +241,7 @@ class Mushroom {
 
 
 
-// *** (5) Game Preparation ***
+// *** (5) Game Preparation Functions***
 
 // score recording
 function scoreDisplay() {
@@ -253,15 +254,22 @@ function scoreDisplay() {
 
 // Create mushroom at random interval
 // randomMushroom function is called by a setTimeout function inside this function
-// randomMushroom: generate a random interval within 800 - 5000ms and increase mushroomSpeed if the player's score is above 800
+// randomMushroom: generate a random interval within 900 - 5000ms and increase mushroomSpeed if the player's score is above 800
 // setTimeout: generate a random mushroom and push it into an array called MushroomTroup,
 //             and activated at different times/intervals genrated by its parent/randomMushroom function
 function randomMushroom() {
   let interval = randomIntInclusive(9,50)*100;
   // speed up mushroom
-  if (score > 800) {
-    mushroomSpeed += score/6000;
+  if (score > 600) {
+    mushroomSpeed += score/5000;
+    if (mushroomSpeed >= 4.5){
+      interval = randomIntInclusive(8,30)*100
+    }
+    if (score > 3000){
+      interval = randomIntInclusive(7,20)*100
+    }
   }
+  console.log(interval, mushroomSpeed)
   setTimeout(function() {
     if (mushroomGo == true) {
       randomMushroom();
@@ -269,11 +277,6 @@ function randomMushroom() {
     }
   }, interval);
 }
-
-
-
-
-// *** (6) Game Initiation ***
 
 // Create the character with a y-axis velocity (dy) = -20
 let char = new Character(-20);
@@ -286,7 +289,11 @@ backgroundImage.onload = function() {
 }
 
 
-// Game Initiation Function (The Master Function)
+
+
+// *** (6) Game Initiation function***
+
+// Start the game 
 function init() {
   backgroundImage.onload();
   char.draw();
@@ -294,7 +301,9 @@ function init() {
   stopAutoMoveAnimate = false;
   window.requestAnimationFrame(autoMoveAnimate);
   mushroomGo = true;
+  // push in the first mushroom into the mushroomTroup array first
   mushroomTroup = [new Mushroom(mushroomSpeed)];
+  // Generate random mushroom
   randomMushroom();
 }
 

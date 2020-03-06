@@ -6,7 +6,7 @@ body {
   padding-top: 8px;
   padding-bottom: 13px;
 }
-h2{
+h2 {
   font-size: 25px;
 }
 
@@ -18,7 +18,7 @@ div.wrapper {
   max-width: 1000px;
   margin: 0 auto;
 }
-.wrap-start{
+.wrap-start {
   width: 1000px;
   position: absolute;
   display: flex;
