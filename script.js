@@ -269,7 +269,6 @@ function randomMushroom() {
       interval = randomIntInclusive(7,20)*100
     }
   }
-  console.log(interval, mushroomSpeed)
   setTimeout(function() {
     if (mushroomGo == true) {
       randomMushroom();
