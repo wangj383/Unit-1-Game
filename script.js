@@ -252,7 +252,9 @@ function scoreDisplay() {
   c.fillText ("Highest Score: " + highestScore.toString() + "  Your score:" + score.toString(), canvas.width - 200, 60)
 }
 
+
 // Create mushroom at random interval
+
 // randomMushroom function is called by a setTimeout function inside this function
 // randomMushroom: generate a random interval within 900 - 5000ms and increase mushroomSpeed if the player's score is above 800
 // setTimeout: generate a random mushroom and push it into an array called MushroomTroup,
