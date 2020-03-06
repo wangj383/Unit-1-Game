@@ -21,7 +21,7 @@ To avoid the mushrooms, the player can press the space bar to let Guinnie jump.
 [Go to the game](https://wangj383.github.io/Unit-1-Game/)
 
 ## Next Steps
-1. Make the backrgound move in the same direction as the mushroom
+1. Make the backrgound moves in the same direction as the mushroom
 2. Create a game interface where player could choose their character's color
 3. Allow the character to jump once in the air 
 
