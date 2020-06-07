@@ -235,6 +235,7 @@ class Mushroom {
     this.dot3.draw();
     this.dot4.draw();
     this.dot5.draw();
+    console.log(mushroomTroup, this.x)
   }
 }
 
@@ -260,23 +261,28 @@ function scoreDisplay() {
 // setTimeout: generate a random mushroom and push it into an array called MushroomTroup,
 //             and activated at different times/intervals genrated by its parent/randomMushroom function
 function randomMushroom() {
-  let interval = randomIntInclusive(9,50)*100;
-  // speed up mushroom
-  if (score > 600) {
-    mushroomSpeed += score/5000;
-    if (mushroomSpeed >= 4.5){
-      interval = randomIntInclusive(8,30)*100
+  if (stopAutoMoveAnimate == false){
+    let interval = randomIntInclusive(9,50)*100;
+    // speed up mushroom
+    if (score > 600) {
+      // mushroomSpeed += score/5000;
+      mushroomSpeed += 0.2
+      if (mushroomSpeed >= 5){
+        interval = randomIntInclusive(7,30)*100
+      }
+      if (score > 2000){
+        interval = randomIntInclusive(7,18)*100
+      }
     }
-    if (score > 3000){
-      interval = randomIntInclusive(7,20)*100
-    }
+    console.log(mushroomSpeed)
+    console.log(interval)
+    setTimeout(function() {
+      if (mushroomGo == true) {
+        randomMushroom();
+        mushroomTroup.push(new Mushroom(mushroomSpeed));
+      }
+    }, interval);
   }
-  setTimeout(function() {
-    if (mushroomGo == true) {
-      randomMushroom();
-      mushroomTroup.push(new Mushroom(mushroomSpeed));
-    }
-  }, interval);
 }
 
 // Create the character with a y-axis velocity (dy) = -20
