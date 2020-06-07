@@ -5,20 +5,23 @@
     <meta name="viewport" content="width=device-width">
     <title>Endless Running Game</title>
     <link href="style.css" rel="stylesheet" type="text/css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.css" rel="stylesheet" type="text/css" />
     <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
     <script defer src="script.js"></script>
   </head>
   <body>
     <h1 id="game_name">Guinnie's Endless Running Game</h1>
     <div class="wrapper">
-      <button id ="start"> Start</button>
+      <div class="wrap-start">
+        <button id="start"> Start</button>
+      </div>
       <canvas>
       </canvas>
       <div class="instruction">
         <h2>How to Play?</h2>
         <ul></ul>
-          <li>Rule: do not let the character hit the mushroom!</li>
-          <li>Press <span>Space</span> key to jump over the blocks</li>
+          <li>Rule: Do not let Guinnie hit the mushrooms!</li>
+          <li>Press <span>Space</span> key to jump over the mushrooms</li>
         </ul>
         <button class="reset">Reset Game</button>
       </div>

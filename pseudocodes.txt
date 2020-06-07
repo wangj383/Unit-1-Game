@@ -1,0 +1,104 @@
+Pseudocodes for "Guinnie's Endless Running Game"
+
+*This game uses Canvas to draw and create animation)
+*The top part of the screen is Canvas and the bottom part is the instruction section.
+
+
+- When Game Loads:
+    - introduce/load all the variables
+    - math helper functions, event listeners, Classes, game preparation functions(except background image) will be read over but not activated
+
+EvenListener:
+    - when start button is cllicked, fadeOut (a jQuery function) the corresponding html
+        and init() (initiate the game)
+    - when spacebar is pressed, jumpKey is on and jumpAnimate is subtracted
+    - when reset button in the instruction section pressed, reset() runs
+
+- To start/initialize the game,
+    - If never plays the game, the player needs to click the start button in the middle of the game screen
+    - If played the game, the player can press the reset button in the "How to Play" section to restart the game.
+
+
+- Classes
+    - Class Circle
+        - The fundamental class that the Class Character and Class Mushroom are based on
+        - Take in the following as paraments
+            - x(x coordinate)
+            - y(y coordinate)
+            - radius(of the circle)
+            - startAngle(where the circumference starts)
+            - dx(x velocity),dy (y velocity)
+            - color(filled in circle)
+        - Save y and dy's beginning value by assigning variable "_y" and "_dy" to equal to their values.
+        - Functions: draw(), jump() [ jump up and down], autoMoveXaxis() [move to the left]
+        - jump(): 
+            - when jumpKey is turn on, y will add dy ( a negative y velocity) and 
+                dy is updated to add 1 to decrease in value
+            - if y is equal to its original value, reset dy to its original value (_dy) and turn off jumpKey
+            - However, consider the jump function design of the character(which is running jump() for each body part),
+                the first body part reaches y = _y will turn off the jumpKey for other parts.
+                Therefore, add a if statement that check whether the other parts' y gets to its original value (_y) or not, while jumpkey is off.
+                If so, y will add dy ( a negative y velocity) and dy is set to its original _dy value
+        - autoMoveXaxis():
+            - x is subtracted by a positive dx (x velocity) value. Thus, the object will move to left 
+    - Class Character
+        - Take in dy as paramenter
+        - create each body part using the Class Circle
+        - Functions: draw(), jump()
+
+    - Class Mushroom
+        - Take in dx as parameter
+        - Create the mushroom head and dots on the head using Class Circle
+        - Functions: autoMoveXaxis(),draw()
+        - Draw: use line path to draw the stem and using Class Circle's draw() to draw the head and dots
+        - autoMoveXaxis: design for the mushroom stem to move left
+
+randomMushroom():
+    - the function is called by a setTimeout function inside this function
+    - generate a random interval within 900 - 5000ms and increase mushroomSpeed if the player's score is above 800
+    - setTimeout: generate a random mushroom and push it into an array called MushroomTroup,
+                 and activated at different times/intervals genrated by its parent/randomMushroom function
+
+
+- Game Initiation Function [init() function] Logic:
+    - Draw in: backgroundImage, character, game score
+    - Set: 
+        - stopAutoMoveAnimate(acts as a off switch for the autoMoveAnimate) to false (= start autoMoveAnimate)
+        - mushroomGo(acts as a on/off swtich for creating the mushroom) to true (= mushroom starts to be created)
+    - Activate the autoMoveAnimate function
+    - The player can press spacebar to let the character/Guinnie jump up and down
+    - The spacebar will only work after the Guinnie jump back down, therefore it does not work the Guinnie is in the air
+
+autoMoveAnimate()
+    - when stopAutoMoveAnimate = false, repeatedly call itself and therefore create the animation effect
+    - clear the screen first or each run of this function (so that no previous drawing of the character and mushroom left on the screen)
+    - Draw: backgroundImage, score (add 1 for each round of this function), character, all mushrooms in the mushroomTroup (with a change in its x velocity [=move to the left] for each run of the function)
+    - collision detection function is included:
+        - check the distance between the character's main body part (colored white) and the 
+
+jumpAnimate()
+    - repeatedly call itself to create the animation effect
+    - If jumpKey is on then continue with the animation
+
+Collision Detection Function:
+    - check the distance between the character's main body part (colored white) and the mushroom head.
+    - if less that the sum of radius between the two, it means it is a collision
+    - stopAutoMoveAnimate = true (=stop auto animation)
+    - no more mushroom is not being created 
+    - cannot jump the character
+    - screen is clear with only background image
+    - highest score is updated if the current score is higher than previous
+    - Draw: character, changed the color of mushroom that hits the character, game over text
+
+reset()
+    - turn off stopAutoMoveAnimate
+    - clear the screen
+    - Draw: bakcground
+    - Display: start button
+    - Set score, mushroomSpeed to their initial value
+    - Recreate the character and the mushroom Troup array
+
+
+
+
+

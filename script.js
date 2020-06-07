@@ -1,69 +1,93 @@
+// ***** Code Outline *****
+// (1) Introduce Variables
+// (2) Math Helper Functions
+// (3) Event Listeners
+// (4) Create Classes: Class Circle, Character (=Guinnie), Mushroom (=Obstacle)
+// (5) Game Preparation Functions
+// (6) Game Initiation Function
+// (7) Game Animation Functions: autoMoveAnimation and jumpAnimation function
+// (8) Reset game
+// (9) Useful Function for Testing
+ 
+
+
+
+// *** (1) Introduce Variables ***
+
+// DOM elements
 let canvas = document.querySelector("canvas");
-let startButton = document.querySelector("#start")
-// canvas frame size
-canvas.width = 1000
-canvas.height = 400
+let startButton = document.querySelector("#start");
+let buttonEl = document.querySelector(".reset");
+
+// Set canvas frame size
+canvas.width = 1000;
+canvas.height = 400;
+
+// Initiate variable used for drawing the character and obstacles/mushrooms
+let c = canvas.getContext("2d");
+
+// Initiate variables used for the game 
+let stopAutoMoveAnimate = false;
+let mushroomGo = false;
+let jumpKey = "off";
+let ground_height = (canvas.height / 5 * 4 + 3 );
+let score = 0;
+let highestScore = 0;
+let mushroomSpeed = 4;
+
+// Variables for "Game Over" sign
+let gameOver = canvas.getContext("2d");
+let gameOverX = canvas.width/2 - 100;
+let gameOverY = canvas.height/2 - 50;
+let gameOverWidth = 200;
+let gameOverHeight = 100;
 
 
-// Loading all variables
-let c = canvas.getContext("2d")
-
-// rectangle for game over
-let rectangle = canvas.getContext("2d")
-let rectX = canvas.width/2 - 100;
-let rectY = canvas.height/2 - 50;
-let rectWidth = 200;
-let rectHeight = 100;
-
-let ground_height = (canvas.height / 5 * 4 + 3 )
-// let startButtonPresence = true
-let stopAutoMoveAnimate = false
-let mushroomGo = false
-let jumpKey = "off"
-let score = 0
-let highestScore = 0
 
 
-// Loading the background image
-let backgroundImage = new Image(); 
-// let backgroundImageSpeed = 0;
-backgroundImage.src = './images/forest.png'; 
-backgroundImage.onload = function() {
-  c.drawImage(backgroundImage, 0, 0,canvas.width, canvas.height);
-  
-  // drawGround()
+// *** (2) Math helper functions ***
+
+function randomIntInclusive(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min + 1)) + min; 
 }
 
-// Event listener for mousemove and click for start button
+function getDistance(cx,cy,ox,oy) {
+  let xDistance = cx - ox;
+  let yDistance = cy - oy;
+  return Math.sqrt( Math.pow(xDistance, 2) + Math.pow(yDistance, 2));
+}
 
-startButton.addEventListener("click",function(){
+
+
+
+// *** (3) Event Listeners ***
+
+// startButton's event listener 
+// (startButton is created by html, and therefore need to be fadeout to hide the displauy)
+startButton.addEventListener("click", function() {
   $("#start").fadeOut(1);
-  init()
+  init();
 })
 
-
-// Press spacebar to jump up 
-window.addEventListener('keydown', function(event){
-  // && startButtonPresence == false
+// Spacebar's event listener ( press the key to let the character jump)
+window.addEventListener('keydown', function(event) {
   if (event.which == 32 && stopAutoMoveAnimate == false && jumpKey != "on"){
-    jumpKey = "on"
-    window.requestAnimationFrame(jumpAnimate)
+    jumpKey = "on";
+    window.requestAnimationFrame(jumpAnimate);
   }
 })
 
+// Event Listener for reset
+buttonEl.addEventListener("click", reset);
 
-// Ground Line
 
-// this code is for testing where my ground line is 
-// function drawGround() {
-//   c.beginPath();
-//   c.moveTo(0, ground_height);
-//   c.lineTo(canvas.width, ground_height);
-//   c.strokeStyle = "white";
-//   c.stroke();
-// }
 
-//circle
+
+// *** (4) Classes (Circle, Character, Mushroom) ***
+
+// The fundamental class that Class Character and Class Mushroom inheritant from
 class Circle{
   constructor (x,y,radius,startAngle,dx,dy,color){
     this.x = x;
@@ -75,66 +99,50 @@ class Circle{
     this.color = color;
     this._y = this.y;
     this._dy = this.dy;
-    // this.count = 0;
   }
   
+  // Draw circle
   draw() {
     c.beginPath();
     c.arc(this.x, this.y, this.radius, this.startAngle, Math.PI * 2, false);
     c.closePath();
-    // // c.strokeStyle = "black";
-    // c.stroke();
     c.fillStyle = this.color;
     c.fill();
   };
   
+  // Motion: Jump up and fall down
   jump(){
-    // console.log(this.y)
-    // console.log(this._y)
+    // When the jumpKey is off, put other parts of the character back to its original location
     if(this.y != this._y && jumpKey == "off" ){
       this.y += this.dy
       this.dy = this._dy
     }
     if (jumpKey == "on"){
-      // console.log("ONONNOJNO")
-      // console.log(this.dy)
-      // console.log(this.y)
       this.y += this.dy
       this.dy += 1
-      // console.log(this.y)
-      if (this.y == (this._y)){
-        // this.count += 1 
-        // console.log(this.count)
-        // reset dy to char dy -15
-        this.dy = this._dy
-        
-        // if (this.count == 2){
-        //   // if last part, turn off jump   
-          jumpKey = "off"
-          
-          console.log(jumpKey)
 
-        // }
-            
-        
-        // console.log("OFFFF")
-        // console.log(this.dy)
-        // console.log(this.y)
+      //  turn off jumpKey if one of the character's body part returns to its original location
+      if (this.y == (this._y)){
+        // reset dy to original value
+        this.dy = this._dy
+          jumpKey = "off"
       }
     }
   }
 
+//Motion: Move to the left
   autoMoveXaxis(){
     this.x -= this.dx;
     this.draw();
   }
-
- 
 }
 
+
+// Create Guinnie, Inherit from Class Circle
 class Character{
   constructor(dy){
     this.dy = dy
+    // Create body parts
     this.ear1 = new Circle(88, ground_height - 36, 8, 0, 0 , this.dy, "grey")
     this.body = new Circle(80, ground_height - 20, 20, 0, 0, this.dy, "white")
     this.body2 = new Circle(70, ground_height - 18, 18, 0, 0, this.dy, "white")
@@ -147,6 +155,8 @@ class Character{
     this.leg3 = new Circle(65, ground_height, 4, 0, 0 , this.dy, "grey")
     this.leg4 = new Circle(57, ground_height, 4, 0, 0 , this.dy, "grey")
   }
+
+  // Draw Guinnie
   draw(){
     this.ear1.draw()
     this.leg1.draw()
@@ -159,8 +169,9 @@ class Character{
     this.eyeInner.draw()
     this.leg2.draw()
     this.leg4.draw()
-
   }
+
+  // Guinnie Jump
   jump(){
     this.ear1.jump()
     this.leg1.jump()
@@ -173,36 +184,38 @@ class Character{
     this.eyeInner.jump()
     this.leg2.jump()
     this.leg4.jump()
-    console.log("ALL PROCESSED")
   }
 }
 
 
+// Create a Mushroom, Inherit from Class Circle
 class Mushroom {
-  constructor(dx){
-
-    this.dx = dx
-    this.head = new Circle(canvas.width, canvas.height / 5 * 4, 30, 10, this.dx, 0, "#ea526f")
-    this.dot1 = new Circle (canvas.width + 6, canvas.height / 5 * 4 - 17, 2, 0, this.dx, 0, "white")
-    this.dot2 = new Circle (canvas.width- 3, canvas.height / 5 * 4 - 24, 2, 0, this.dx, 0,"white")
-    this.dot3 = new Circle (canvas.width - 12, canvas.height / 5 * 4 - 17, 2, 0, this.dx, 0, "white")
-    this.dot4 = new Circle (canvas.width + 17 , canvas.height / 5 * 4 - 20, 2, 0, this.dx, 0,"white")
-    this.dot5 = new Circle (canvas.width + 22 , canvas.height / 5 * 4 - 10, 2, 0, this.dx, 0,"white")
-    this.x = 0
-
+  constructor(dx) {
+    this.dx = dx;
+    this.head = new Circle(canvas.width, canvas.height / 5 * 4, 30, 10, this.dx, 0, "#ea526f");
+    this.dot1 = new Circle (canvas.width + 6, canvas.height / 5 * 4 - 17, 2, 0, this.dx, 0, "white");
+    this.dot2 = new Circle (canvas.width- 3, canvas.height / 5 * 4 - 24, 2, 0, this.dx, 0,"white");
+    this.dot3 = new Circle (canvas.width - 12, canvas.height / 5 * 4 - 17, 2, 0, this.dx, 0, "white");
+    this.dot4 = new Circle (canvas.width + 17 , canvas.height / 5 * 4 - 20, 2, 0, this.dx, 0,"white");
+    this.dot5 = new Circle (canvas.width + 22 , canvas.height / 5 * 4 - 10, 2, 0, this.dx, 0,"white");
+    this.x = 0;
   }
-  autoMoveXaxis(){
+
+  // Motion: Move Horizontally (to the left)
+  autoMoveXaxis() {
+    // Move the mushroom stem
     this.x -= this.dx;
     this.draw();
-    this.head.autoMoveXaxis()
-    this.dot1.autoMoveXaxis()
-    this.dot2.autoMoveXaxis()
-    this.dot3.autoMoveXaxis()
-    this.dot4.autoMoveXaxis()
-    this.dot5.autoMoveXaxis()
+    // Move the mushroom head
+    this.head.autoMoveXaxis();
+    this.dot1.autoMoveXaxis();
+    this.dot2.autoMoveXaxis();
+    this.dot3.autoMoveXaxis();
+    this.dot4.autoMoveXaxis();
+    this.dot5.autoMoveXaxis();
   }
 
-  draw(){
+  draw() {
     // draw mushroom stem
     c.beginPath();
     c.moveTo(canvas.width - 5 + this.x, canvas.height / 5 * 4 + 4 );
@@ -214,162 +227,168 @@ class Mushroom {
     c.stroke();
     c.fillStyle = "#fbe3cc";
     c.fill();
-    this.head.draw()
-    this.dot1.draw()
-    this.dot2.draw()
-    this.dot3.draw()
-    this.dot4.draw()
-    this.dot5.draw()
 
     // draw the mushroom head and the dots on the head 
+    this.head.draw();
+    this.dot1.draw();
+    this.dot2.draw();
+    this.dot3.draw();
+    this.dot4.draw();
+    this.dot5.draw();
+    console.log(mushroomTroup, this.x)
   }
 }
 
 
-// create circle 
-// let circle = new Circle(80, ground_height - 20, 20, 0, 0, 10, "red");
-
-  // create mushroom/obstacle
-function randomMushroom() {
-  let interval = randomIntInclusive(9,50)*100
-  setTimeout(function() {
-    // mushroom = new Mushroom(randomIntInclusive(1,5))
-    if (mushroomGo ==true) {
-      randomMushroom()
-      mushroomTroup.push(new Mushroom(4));
-    }
-  }, interval)
-}
-
-// Initiate the game
-let char = new Character(-20)
-
-function init() {
-  backgroundImage.onload()
-  char.draw()
-  scoreDisplay()
-  stopAutoMoveAnimate = false
-
-  // let mushroom = new Mushroom(4);
-  window.requestAnimationFrame(autoMoveAnimate)
-  mushroomGo = true
-  mushroomTroup = [new Mushroom(4)]
-  randomMushroom()
-}
-
-  // let interval = 4000
-  // let mushroomTimerId = setInterval(function() {
-  //     // mushroom = new Mushroom(randomIntInclusive(1,5))
-  //   mushroomTroup.push(new Mushroom(2));
-  //   interval = randomIntInclusive(0,10)*1000
-  //   console.log(interval)
-  //   }, interval
-  // )
 
 
-
-
-// Reset the game
-function reset(){
-  stopAutoMoveAnimate = true
-  c.clearRect(0,0,canvas.width,ground_height)
-  backgroundImage.onload()
-  $("#start").fadeIn()
-  // drawGround()
-  score = 0
-  // circle = new Circle(80, ground_height - 20, 20, 0, 0, 10, "red")
-  char = new Character(-20)
-  mushroomTroup = [new Mushroom(4)]
-
-}
-buttonEl = document.querySelector(".reset")
-buttonEl.addEventListener("click", reset)
-
-
-
-
-
+// *** (5) Game Preparation Functions***
 
 // score recording
-
-
 function scoreDisplay() {
   c.textAlign="center"; 
   c.textBaseline = "middle";
   c.fillStyle = "#FFF66E";
   c.font = "20px Comic Sans MS"
   c.fillText ("Highest Score: " + highestScore.toString() + "  Your score:" + score.toString(), canvas.width - 200, 60)
+}
 
+
+// Create mushroom at random interval
+
+// randomMushroom function is called by a setTimeout function inside this function
+// randomMushroom: generate a random interval within 900 - 5000ms and increase mushroomSpeed if the player's score is above 800
+// setTimeout: generate a random mushroom and push it into an array called MushroomTroup,
+//             and activated at different times/intervals genrated by its parent/randomMushroom function
+function randomMushroom() {
+  if (stopAutoMoveAnimate == false){
+    let interval = randomIntInclusive(9,50)*100;
+    // speed up mushroom
+    if (score > 600) {
+      // mushroomSpeed += score/5000;
+      mushroomSpeed += 0.2
+      if (mushroomSpeed >= 5){
+        interval = randomIntInclusive(7,30)*100
+      }
+      if (score > 2000){
+        interval = randomIntInclusive(7,18)*100
+      }
+    }
+    console.log(mushroomSpeed)
+    console.log(interval)
+    setTimeout(function() {
+      if (mushroomGo == true) {
+        randomMushroom();
+        mushroomTroup.push(new Mushroom(mushroomSpeed));
+      }
+    }, interval);
+  }
+}
+
+// Create the character with a y-axis velocity (dy) = -20
+let char = new Character(-20);
+
+// Load the background image
+let backgroundImage = new Image(); 
+backgroundImage.src = './images/forest.png'; 
+backgroundImage.onload = function() {
+  c.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
 }
 
 
 
 
+// *** (6) Game Initiation function***
 
-
-
-
-
-// Math helper function
-function randomIntInclusive(min, max) {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min + 1)) + min; 
+// Start the game 
+function init() {
+  backgroundImage.onload();
+  char.draw();
+  scoreDisplay();
+  stopAutoMoveAnimate = false;
+  window.requestAnimationFrame(autoMoveAnimate);
+  mushroomGo = true;
+  // push in the first mushroom into the mushroomTroup array first
+  mushroomTroup = [new Mushroom(mushroomSpeed)];
+  // Generate random mushroom
+  randomMushroom();
 }
 
-function getDistance(cx,cy,ox,oy){
-  let xDistance = cx - ox;
-  let yDistance = cy - oy;
-  return Math.sqrt( Math.pow(xDistance, 2) + Math.pow(yDistance, 2))
-}
 
 
-// Game Interactive Functions
 
+// *** (7) Game Animation Functions ***
+// autoMoveAnimate: continuously updating/drawing the current location of the character and mushrooms;
+//                  contains a collision detection function
 function autoMoveAnimate() {
   if (stopAutoMoveAnimate == false) {
       requestAnimationFrame(autoMoveAnimate);
       c.clearRect(0,0,canvas.width, ground_height);
-      backgroundImage.onload()
-      score += 1
-      scoreDisplay()
-      char.draw()
+      backgroundImage.onload();
+      score += 1;
+      scoreDisplay();
+      char.draw();
       mushroomTroup.forEach((mushroom) => {
-        mushroom.autoMoveXaxis()
-        // Collision detection
+        mushroom.autoMoveXaxis();
+        // Collision detection: detect whether the white color body parts of Guinnie touch the mushroom head
         if(getDistance(char.body.x, char.body.y, mushroom.head.x, mushroom.head.y) < (char.body.radius + mushroom.head.radius)
            || getDistance(char.body2.x, char.body2.y, mushroom.head.x, mushroom.head.y) < (char.body2.radius + mushroom.head.radius)){
-          stopAutoMoveAnimate = true
-          mushroomGo = false
-          jumpKey = "off"
+          stopAutoMoveAnimate = true;
+          mushroomGo = false;
+          jumpKey = "off";
           c.clearRect(0,0,canvas.width, ground_height);
-          backgroundImage.onload()
+          backgroundImage.onload();
+          // Check whether the score for this round is higher than the previous scores. If so, update the highest score
           if (highestScore < score){
-            highestScore = score
+            highestScore = score;
             }
-          scoreDisplay()
-          
+          // Draw the ending updates (include change of scoreDisplay, mushroom head color and Display "Gane Over" phrase)
+          scoreDisplay();
           char.draw()
-          mushroom.head.color = "orange"
-          mushroom.draw()
-          rectangle.textAlign="center"; 
-          rectangle.textBaseline = "middle";
-          rectangle.fillStyle = "orange";
-          rectangle.font = "30px Comic Sans MS"
-          rectangle.fillText ("Game Over", rectX + rectWidth / 2, rectY + rectHeight / 2)
+          mushroom.head.color = "orange";
+          mushroom.draw();
+          gameOver.textAlign="center"; 
+          gameOver.textBaseline = "middle";
+          gameOver.fillStyle = "orange";
+          gameOver.font = "30px Comic Sans MS";
+          gameOver.fillText ("Game Over", gameOverX + gameOverWidth / 2, gameOverY + gameOverHeight / 2);
         }
       })
-
   }
 }
+
+// Animation: jumpAnimate function is repeatedly called by its inner function (requestAnimationFrame)
 function jumpAnimate(){
-  console.log(jumpKey)
-  // console.log(char)
-  char.jump()
+  char.jump();
   if (jumpKey == "on") {
-    requestAnimationFrame(jumpAnimate)
-    // char.jump()
-    console.log("HERERE>>??")
+    requestAnimationFrame(jumpAnimate);
   } 
-  
 }
+
+
+
+
+// *** (8) Reset the game ***
+function reset(){
+  stopAutoMoveAnimate = true;
+  c.clearRect(0,0,canvas.width,ground_height);
+  backgroundImage.onload();
+  $("#start").fadeIn();
+  score = 0;
+  mushroomSpeed = 4;
+  char = new Character(-20);
+  mushroomTroup = [new Mushroom(mushroomSpeed)];
+}
+
+
+
+
+// *** (9) Other Useful Function for Testing ***
+// Uncomment below function to draw a ground line. It is useful when testing character's jump
+// function drawGround() {
+//   c.beginPath();
+//   c.moveTo(0, ground_height);
+//   c.lineTo(canvas.width, ground_height);
+//   c.strokeStyle = "white";
+//   c.stroke();
+// }
